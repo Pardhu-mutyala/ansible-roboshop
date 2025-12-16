@@ -1,0 +1,9 @@
+- name: frontend component
+  hosts: frontend
+  become: yes
+  tasks:
+  - name: disable default nginx
+    ansible.builtin.command: dnf module disable nginx -y
+
+  - name: enable nginx:1.24 
+    ansible.builtin.command: dnf module eable nginx:1.24 -y
