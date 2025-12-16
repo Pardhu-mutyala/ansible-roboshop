@@ -1,1 +1,73 @@
 We are using Ansible to Automate the Process of the roboshop 3-tier web application.In which it conatins frontend and backedn and some DB's
+
+# Ansible Roboshop
+
+This repository contains Ansible playbooks and supporting files to deploy the Roboshop microservices stack. The playbooks and service unit files are located under the `Ansible-rboshop/` directory.
+
+## Repository layout (Ansible-rboshop/)
+- inventory.ini
+  - Example inventory used to target hosts/groups for deployment.
+- mongo.repo
+  - Repository configuration file for installing MongoDB on target hosts.
+- cart.yaml
+  - Playbook to install and configure the Cart service.
+- catalogue.yaml
+  - Playbook to install and configure the Catalogue service.
+- user.yaml
+  - Playbook to install and configure the User service.
+- frontend.yaml
+  - Playbook to install and configure the Frontend.
+- mongodb.yaml
+  - Playbook to install and configure MongoDB.
+- redis.yaml
+  - Playbook to install and configure Redis.
+- cart.service, catalogue.service, user.service
+  - systemd service unit files for the Cart, Catalogue, and User services respectively.
+
+## Prerequisites
+- Ansible installed on the control machine (recommended: 2.9+).
+- SSH access from the control machine to target hosts with sudo privileges.
+- Ensure target hosts have network access to required package repositories (or provide repository files like `mongo.repo` for MongoDB).
+
+## How to use
+1. Update inventory
+   - Edit `Ansible-rboshop/inventory.ini` to include your target hosts and groups.
+
+2. Run a playbook
+   - From repository root, run:
+     - Install and configure a microservice (example: Catalogue):
+       - ansible-playbook -i Ansible-rboshop/inventory.ini Ansible-rboshop/catalogue.yaml
+     - Install MongoDB:
+       - ansible-playbook -i Ansible-rboshop/inventory.ini Ansible-rboshop/mongodb.yaml
+     - Install Redis:
+       - ansible-playbook -i Ansible-rboshop/inventory.ini Ansible-rboshop/redis.yaml
+     - Install Cart, User, Frontend:
+       - ansible-playbook -i Ansible-rboshop/inventory.ini Ansible-rboshop/cart.yaml
+       - ansible-playbook -i Ansible-rboshop/inventory.ini Ansible-rboshop/user.yaml
+       - ansible-playbook -i Ansible-rboshop/inventory.ini Ansible-rboshop/frontend.yaml
+
+3. Deploy / manage systemd services
+   - The repository includes example unit files (`*.service`). If a playbook places a unit file under `/etc/systemd/system/`, on the target host run:
+     - sudo systemctl daemon-reload
+     - sudo systemctl enable <service-name>
+     - sudo systemctl start <service-name>
+   - Example service names: `cart.service`, `catalogue.service`, `user.service` (verify exact names used by the playbooks).
+
+## Notes and tips
+- `mongo.repo` can be placed on target hosts (e.g., under `/etc/yum.repos.d/`) to configure package repository access before installing MongoDB.
+- Playbooks expect appropriate connectivity and relevant package manager (yum/apt) behavior on targets. Inspect the individual YAML playbooks to confirm any distribution-specific tasks or variables.
+- If a playbook requires application artifacts (binaries, archives, code repo), ensure those artifacts are reachable from target hosts or adjust the playbook to fetch them.
+
+## Troubleshooting
+- If a playbook fails, run with increased verbosity to get more details:
+  - ansible-playbook -i Ansible-rboshop/inventory.ini Ansible-rboshop/<playbook>.yaml -vvv
+- Check target host logs (e.g., systemd journal) for service start failures:
+  - sudo journalctl -u <service-name> -xe
+
+## Extending the repo
+- Consider adding roles for repeated tasks and extracting variables into group/host vars.
+- Add README badges, CI checks, or an example Vagrant/VM setup for testing the playbooks locally.
+
+## Contact / License
+- Repository owner: Pardhu-mutyala
+- Add license and contribution guidelines as needed.
