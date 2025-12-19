@@ -48,3 +48,8 @@
     ansible.builtn.copy:
       src: nginx.conf
       dest: /etc/nginx/nginx.conf
+
+  - name: restrt nginx
+    ansible.builtin.services:
+      name: nginx
+      state: restarted
