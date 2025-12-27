@@ -1,0 +1,5 @@
+- name: configue mongod component
+  hosts: mongodb
+  becomw: yes
+  roles:  # this will automatically load the folder called roles in the current directory.
+  - mongodb
